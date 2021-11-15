@@ -1,7 +1,16 @@
 breed [flowers flower]
 
 flowers-own [
-  nectar ?
+  nectar
+]
+
+breed [bees bee]
+
+bees-own [
+  nectar  ;;nectar, 0,6 per flower
+  nectar-max  ;;max 80 mg
+  age  ;;age in days
+  flowers-visited  ;;flowers visited in 1 trip, stops at 100
 ]
 
 to setup
@@ -24,6 +33,22 @@ to setup
   ask flowers with [((pxcor - 25) * (pxcor - 25)) + ((pycor - 25) * (pycor - 25)) < 64] [
     die
   ]
+
+  create-bees (bee-amount / 1000) [;; 1 bij werkt voor 1000
+    set nectar 0
+    set nectar-max 80 ;;in grams
+    set age random 50
+    set flowers-visited 0
+    set shape "bee"
+    setxy (19 + random-float 12) (19 + random-float 12)
+  ]
+
+  ask bees [
+    set color round (age / 7) * 10 + 15
+  ]
+END
+
+to go
 
 END
 @#$#@#$#@
@@ -80,7 +105,7 @@ flower-distance
 flower-distance
 0
 1000
-3.0
+350.0
 1
 1
 m
@@ -109,6 +134,38 @@ TEXTBOX
 Average distance between flowers and hive/other flowers
 11
 0.0
+1
+
+SLIDER
+18
+191
+190
+224
+bee-amount
+bee-amount
+10000
+80000
+80000.0
+1000
+1
+NIL
+HORIZONTAL
+
+BUTTON
+22
+280
+85
+313
+Go
+go
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
 1
 
 @#$#@#$#@
@@ -162,6 +219,31 @@ arrow
 true
 0
 Polygon -7500403 true true 150 0 0 150 105 150 105 293 195 293 195 150 300 150
+
+bee
+true
+0
+Polygon -1184463 true false 152 149 77 163 67 195 67 211 74 234 85 252 100 264 116 276 134 286 151 300 167 285 182 278 206 260 220 242 226 218 226 195 222 166
+Polygon -16777216 true false 150 149 128 151 114 151 98 145 80 122 80 103 81 83 95 67 117 58 141 54 151 53 177 55 195 66 207 82 211 94 211 116 204 139 189 149 171 152
+Polygon -7500403 true true 151 54 119 59 96 60 81 50 78 39 87 25 103 18 115 23 121 13 150 1 180 14 189 23 197 17 210 19 222 30 222 44 212 57 192 58
+Polygon -16777216 true false 70 185 74 171 223 172 224 186
+Polygon -16777216 true false 67 211 71 226 224 226 225 211 67 211
+Polygon -16777216 true false 91 257 106 269 195 269 211 255
+Line -1 false 144 100 70 87
+Line -1 false 70 87 45 87
+Line -1 false 45 86 26 97
+Line -1 false 26 96 22 115
+Line -1 false 22 115 25 130
+Line -1 false 26 131 37 141
+Line -1 false 37 141 55 144
+Line -1 false 55 143 143 101
+Line -1 false 141 100 227 138
+Line -1 false 227 138 241 137
+Line -1 false 241 137 249 129
+Line -1 false 249 129 254 110
+Line -1 false 253 108 248 97
+Line -1 false 249 95 235 82
+Line -1 false 235 82 144 100
 
 box
 false
