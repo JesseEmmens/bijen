@@ -1,3 +1,7 @@
+globals [
+  hour
+]
+
 breed [flowers flower]
 
 flowers-own [
@@ -15,6 +19,7 @@ bees-own [
 
 to setup
   clear-all
+  reset-ticks
   ask patches [
     set pcolor 57
   ]
@@ -28,13 +33,14 @@ to setup
     setxy random-xcor random-ycor
     set color 15
     set shape "flower"
+    set nectar (25 + random 56) / 100
   ]
 
   ask flowers with [((pxcor - 25) * (pxcor - 25)) + ((pycor - 25) * (pycor - 25)) < 64] [
     die
   ]
 
-  create-bees (bee-amount / 1000) [;; 1 bij werkt voor 1000
+  create-bees (bee-amount / 500) [;; 1 bij werkt voor 500
     set nectar 0
     set nectar-max 80 ;;in grams
     set age random 50
@@ -46,10 +52,33 @@ to setup
   ask bees [
     set color round (age / 7) * 10 + 15
   ]
+  set hour 0
 END
 
-to go
 
+
+to go
+  set hour hour + 1
+  if (hour = 24) [
+    age-bees
+    kill-bees
+    set hour 0
+  ]
+  tick
+END
+
+to kill-bees
+  ask bees with [age > 21] [
+    if 21 + random 28 < age [
+      die
+    ]
+  ]
+END
+
+to age-bees
+  ask bees [
+    set age age + 1
+  ]
 END
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -73,8 +102,8 @@ GRAPHICS-WINDOW
 49
 0
 49
-0
-0
+1
+1
 1
 ticks
 30.0
@@ -158,7 +187,7 @@ BUTTON
 313
 Go
 go
-NIL
+T
 1
 T
 OBSERVER
