@@ -1,5 +1,7 @@
 globals [
   hour
+  day
+  nectar_amount
 ]
 
 breed [flowers flower]
@@ -15,10 +17,12 @@ bees-own [
   nectar-max  ;;max 80 mg
   age  ;;age in days
   flowers-visited  ;;flowers visited in 1 trip, stops at 100
+  queen ?
 ]
 
 to setup
   clear-all
+  reset-ticks
   ask patches [
     set pcolor 57
   ]
@@ -28,7 +32,7 @@ to setup
 
   let i 0
 
-  create-flowers 1000 [
+  create-flowers 500 [
     setxy random-xcor random-ycor
     set color 15
     set shape "flower"
@@ -45,14 +49,23 @@ to setup
     set age random 50
     set flowers-visited 0
     set shape "bee"
+    set queen false
     setxy (19 + random-float 12) (19 + random-float 12)
+    rt random 360
+  ]
+
+  ask one-of bees [
+    set queen true
+    set color 9.9
+    set xcor 25
+    set ycor 25
   ]
 
   ask bees [
     set color round (age / 7) * 10 + 15
   ]
   set hour 0
-
+  set day 0 ;;0 spring, 90 summer, 180 fall, 270 winter
 END
 
 
@@ -62,22 +75,41 @@ to go
   if (hour = 24) [
     age-bees
     kill-bees
+    make-bees
     set hour 0
+    set day day + 1
   ]
   tick
 END
 
+to make-bees
+  ask bees with [queen = true] [
+    if day < 31 [
+      hatch-bees 3 + random 1 [ ;;bees hatch 1500-2000 bees in the first month after winter
+        set age 0
+        set nectar 0
+        set nectar-max 80
+        set color 15
+        rt random 360
+        fd random 9
+        set queen false
+      ]
+    ]
+  ]
+END
+
 to kill-bees
-  ask bees with [age > 21] [
-    if 21 + random 28 < age [
+  ask bees with [age > 21 AND queen = false] [
+    if 21 + random 28 < age AND day < 270 [
       die
     ]
   ]
 END
 
 to age-bees
-  ask bees [
+  ask bees with [queen = false] [
     set age age + 1
+    set color round (age / 7) * 10 + 15
   ]
 END
 @#$#@#$#@
@@ -196,6 +228,24 @@ NIL
 NIL
 NIL
 1
+
+PLOT
+618
+123
+818
+273
+bee amount
+ticks
+bees
+0.0
+1000.0
+0.0
+200.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count bees"
 
 @#$#@#$#@
 ## WHAT IS IT?
