@@ -1,4 +1,138 @@
+globals [
+  minute
+  hour
+  day
+  nectar_amount
+]
 
+breed [flowers flower]
+
+flowers-own [
+  nectar-flower
+  visited ?
+]
+
+breed [bees bee]
+
+bees-own [
+  nectar-bee  ;;nectar, 0,6 per flower
+  nectar-max  ;;max 80 mg
+  age  ;;age in days
+  flowers-visited  ;;flowers visited in 1 trip, stops at 100
+  queen ?
+  destination-xcor
+  destination-ycor
+]
+
+to setup
+  clear-all
+  reset-ticks
+  ask patches [
+    set pcolor 57
+  ]
+  ask patches with [((pxcor - 25) * (pxcor - 25)) + ((pycor - 25) * (pycor - 25)) < 64][
+    set pcolor 45
+  ]
+
+  let i 0
+
+  create-flowers 500 [
+    setxy random-xcor random-ycor
+    set color 15
+    set shape "flower"
+    set nectar-flower (25 + random 56) / 100
+  ]
+
+  ask flowers with [((pxcor - 25) * (pxcor - 25)) + ((pycor - 25) * (pycor - 25)) < 64] [
+    die
+  ]
+
+  create-bees (bee-amount / 500) [;; 1 bij werkt voor 500
+    set nectar-bee 0
+    set nectar-max 80 ;;in grams
+    set age random 50
+    set flowers-visited 0
+    set shape "bee"
+    set queen false
+    setxy (19 + random-float 12) (19 + random-float 12)
+    rt random 360
+  ]
+
+  ask one-of bees [
+    set queen true
+    set color 9.9
+    set xcor 25
+    set ycor 25
+  ]
+
+  ask bees [
+    set color round (age / 7) * 10 + 15
+  ]
+  set hour 0
+  set day 0 ;;0 spring, 90 summer, 180 fall, 270 winter
+END
+
+
+
+to go
+  harvest-flower
+  set minute minute + 1
+  if (minute = 60) [
+    set hour hour + 1
+    if (hour = 24) [
+      age-bees
+      kill-bees
+      make-bees
+      ask flowers [set visited false]
+      set hour 0
+      set day day + 1
+    ]
+    set minute 0
+  ]
+
+  tick
+END
+
+to make-bees
+  ask bees with [queen = true] [
+    if day < 31 [
+      hatch-bees 3 + random 1 [ ;;bees hatch 1500-2000 bees in the first month after winter
+        set age 0
+        set nectar-bee 0
+        set nectar-max 80
+        set color 15
+        rt random 360
+        fd random 9
+        set queen false
+      ]
+    ]
+  ]
+END
+
+to kill-bees
+  ask bees with [age > 21 AND queen = false] [
+    if 21 + random 28 < age AND day < 270 [
+      die
+    ]
+  ]
+END
+
+to harvest-flower
+  ask bees with [queen = false and day > 21] [
+    if (count flowers with [visited = false] > 0)[
+      move-to min-one-of flowers with [visited = false] [xcor + ycor]
+      set nectar-bee nectar-bee + [color] of min-one-of flowers [xcor + ycor]
+      ask min-one-of flowers [xcor + ycor] [set visited true]
+    ]
+  ]
+END
+
+to age-bees
+  ask bees with [queen = false] [
+    set age age + 1
+    set color round (age / 7) * 10 + 15
+  ]
+END
 @#$#@#$#@
 GRAPHICS-WINDOW
 237
@@ -26,6 +160,70 @@ GRAPHICS-WINDOW
 1
 ticks
 30.0
+
+BUTTON
+21
+336
+85
+369
+Setup
+setup
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+17
+133
+190
+166
+winter-temperature
+winter-temperature
+-30
+30
+0.0
+1
+1
+°C
+HORIZONTAL
+
+SLIDER
+18
+191
+190
+224
+bee-amount
+bee-amount
+10000
+80000
+80000.0
+1000
+1
+NIL
+HORIZONTAL
+
+BUTTON
+22
+280
+85
+313
+Go
+go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
