@@ -172,6 +172,16 @@ GRAPHICS-WINDOW
 ticks
 30.0
 
+TEXTBOX
+0
+0
+0
+0
+NIL
+11
+0.0
+1
+
 BUTTON
 21
 336
@@ -255,10 +265,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot count bees * 500"
 
 PLOT
-770
-255
-970
-405
+784
+288
+984
+438
 nectar amount
 time
 honey-amount (kg)
@@ -273,10 +283,10 @@ PENS
 "nectarus" 1.0 0 -16777216 true "" "plot honey_amount"
 
 MONITOR
-791
-25
-872
-70
+1102
+344
+1183
+389
 honey made
 net_honey
 17
