@@ -206,7 +206,7 @@ bee-amount
 bee-amount
 10000
 80000
-80000.0
+10000.0
 1000
 1
 NIL
@@ -228,6 +228,24 @@ NIL
 NIL
 NIL
 1
+
+PLOT
+618
+123
+818
+273
+bee amount
+ticks
+bees
+0.0
+1000.0
+0.0
+200.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count bees"
 
 @#$#@#$#@
 ## WHAT IS IT?
