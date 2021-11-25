@@ -1,4 +1,5 @@
 globals [
+  minute
   hour
   day
   nectar_amount
@@ -7,17 +8,20 @@ globals [
 breed [flowers flower]
 
 flowers-own [
-  nectar
+  nectar-flower
+  visited ?
 ]
 
 breed [bees bee]
 
 bees-own [
-  nectar  ;;nectar, 0,6 per flower
+  nectar-bee  ;;nectar, 0,6 per flower
   nectar-max  ;;max 80 mg
   age  ;;age in days
   flowers-visited  ;;flowers visited in 1 trip, stops at 100
   queen ?
+  destination-xcor
+  destination-ycor
 ]
 
 to setup
@@ -36,7 +40,7 @@ to setup
     setxy random-xcor random-ycor
     set color 15
     set shape "flower"
-    set nectar (25 + random 56) / 100
+    set nectar-flower (25 + random 56) / 100
   ]
 
   ask flowers with [((pxcor - 25) * (pxcor - 25)) + ((pycor - 25) * (pycor - 25)) < 64] [
@@ -44,7 +48,7 @@ to setup
   ]
 
   create-bees (bee-amount / 500) [;; 1 bij werkt voor 500
-    set nectar 0
+    set nectar-bee 0
     set nectar-max 80 ;;in grams
     set age random 50
     set flowers-visited 0
@@ -71,14 +75,21 @@ END
 
 
 to go
-  set hour hour + 1
-  if (hour = 24) [
-    age-bees
-    kill-bees
-    make-bees
-    set hour 0
-    set day day + 1
+  harvest-flower
+  set minute minute + 1
+  if (minute = 60) [
+    set hour hour + 1
+    if (hour = 24) [
+      age-bees
+      kill-bees
+      make-bees
+      ask flowers [set visited false]
+      set hour 0
+      set day day + 1
+    ]
+    set minute 0
   ]
+
   tick
 END
 
@@ -87,7 +98,7 @@ to make-bees
     if day < 31 [
       hatch-bees 3 + random 1 [ ;;bees hatch 1500-2000 bees in the first month after winter
         set age 0
-        set nectar 0
+        set nectar-bee 0
         set nectar-max 80
         set color 15
         rt random 360
@@ -102,6 +113,16 @@ to kill-bees
   ask bees with [age > 21 AND queen = false] [
     if 21 + random 28 < age AND day < 270 [
       die
+    ]
+  ]
+END
+
+to harvest-flower
+  ask bees with [queen = false and day > 21] [
+    if [count flowers with [visited = false] > 0][
+    move-to min-one-of flowers with [visited = false] [xcor + ycor]
+    set nectar-bee nectar-bee + [color] of min-one-of flowers [xcor + ycor]
+
     ]
   ]
 END
@@ -159,21 +180,6 @@ NIL
 
 SLIDER
 17
-27
-189
-60
-flower-distance
-flower-distance
-0
-1000
-350.0
-1
-1
-m
-HORIZONTAL
-
-SLIDER
-17
 133
 190
 166
@@ -186,16 +192,6 @@ winter-temperature
 1
 °C
 HORIZONTAL
-
-TEXTBOX
-21
-64
-171
-92
-Average distance between flowers and hive/other flowers
-11
-0.0
-1
 
 SLIDER
 18
@@ -228,24 +224,6 @@ NIL
 NIL
 NIL
 1
-
-PLOT
-618
-123
-818
-273
-bee amount
-ticks
-bees
-0.0
-1000.0
-0.0
-200.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot count bees"
 
 @#$#@#$#@
 ## WHAT IS IT?
