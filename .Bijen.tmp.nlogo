@@ -69,7 +69,7 @@ END
 
 to go
   set minute minute + 1
-  if (minute mod 10 = 0 AND day <= 270) [ ;;harvest once every 8 minutes
+  if (minute mod 10 = 0 AND day <= 270) [ ;;harvest once every 10 minutes. not in winter.
     harvest-flower
   ]
   if (minute = 60) [
@@ -172,16 +172,6 @@ GRAPHICS-WINDOW
 ticks
 30.0
 
-TEXTBOX
-0
-0
-0
-0
-NIL
-11
-0.0
-1
-
 BUTTON
 21
 336
@@ -208,7 +198,7 @@ winter-temperature
 winter-temperature
 -20
 10
-0.0
+-20.0
 1
 1
 °C
@@ -257,7 +247,7 @@ bees
 0.0
 100000.0
 0.0
-80000.0
+100000.0
 true
 false
 "" ""
@@ -265,10 +255,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot count bees * 500"
 
 PLOT
-784
-288
-984
-438
+770
+255
+970
+405
 nectar amount
 time
 honey-amount (kg)
@@ -283,10 +273,10 @@ PENS
 "nectarus" 1.0 0 -16777216 true "" "plot honey_amount"
 
 MONITOR
-1102
-344
-1183
-389
+791
+25
+872
+70
 honey made
 net_honey
 17
@@ -664,6 +654,24 @@ NetLogo 6.2.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="530000"/>
+    <metric>net_honey</metric>
+    <enumeratedValueSet variable="nest-size">
+      <value value="0"/>
+      <value value="1"/>
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="winter-temperature">
+      <value value="-20"/>
+      <value value="1"/>
+      <value value="10"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
