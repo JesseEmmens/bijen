@@ -2,6 +2,7 @@ globals [
   minute
   hour
   day
+  year
   nectar_amount
   honey_amount
   net_honey
@@ -84,6 +85,7 @@ to go
       if (day >= 360) [
         set net_honey honey_amount
         set day 0
+        set year 1
       ]
     ]
     set minute 0
@@ -213,7 +215,7 @@ nest-size
 nest-size
 0
 5
-1.0
+0.0
 1
 1
 NIL
@@ -655,21 +657,13 @@ NetLogo 6.2.0
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
-    <timeLimit steps="530000"/>
-    <metric>net_honey</metric>
-    <enumeratedValueSet variable="nest-size">
-      <value value="0"/>
-      <value value="1"/>
-      <value value="5"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="winter-temperature">
-      <value value="-20"/>
-      <value value="1"/>
-      <value value="10"/>
-    </enumeratedValueSet>
+    <exitCondition>year = 1</exitCondition>
+    <metric>honey_amount</metric>
+    <steppedValueSet variable="nest-size" first="0" step="1" last="5"/>
+    <steppedValueSet variable="winter-temperature" first="-20" step="1" last="10"/>
   </experiment>
 </experiments>
 @#$#@#$#@
